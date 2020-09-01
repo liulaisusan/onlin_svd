@@ -13,7 +13,7 @@ def increment_svd(U, S, V, A, B):
 
     ua = np.concatenate((U, A), axis=1) # cBind(U,A)
     qp,rp = np.linalg.qr(ua, mode='complete') # QP <- Matrix(qr.Q(qrP, complete = TRUE), sparse = TRUE) RP <- Matrix(qr.R(qrP, complete = TRUE), sparse = TRUE)
-    # w = u_y + 1 # w <- rankU+1
+
     qp_x, qp_y = qp.shape # d_qp <- dim(QP)
     rp_x, rp_y = rp.shape # d_rp <- dim(RP)
     # print(qp)
@@ -61,7 +61,6 @@ def increment_svd(U, S, V, A, B):
     ##########################################
     ####### Creating Augmented Sigma
     ##########################################
-    # Ra_flatten = Ra.reshape(np.product(Ra.shape),1)
     Ra_flatten = Ra.T
     temp_0 = np.concatenate((M, Ra_flatten), axis=0)
     # print(temp_0)
@@ -116,40 +115,11 @@ if __name__ == '__main__':
     m = 17
     n = 10
     X = np.random.uniform(0,5, (m,n))
-    # X = np.array(range(28)).reshape((n,m)).T
-    # print(X)
-    # u, s, v = np.linalg.svd(X, full_matrices=False)
-    # print(u)
-
-    # new_row = np.random.uniform(0,2,(n,1))
-    # new_row = np.ones((n,1))
-    # new_row = np.ones((n,2))
-
-    # print(new_row)
-    # w = m + 1
-    # w = m + 2
-    # # A = np.zeros((w,1))
-    # B = new_row
-    # # A[w-1,0] = 1
-    # A = np.concatenate((np.zeros((m, 2)),np.eye(2)), axis=0)
-    # # print(A)
-    # s = np.diag(s)
-    # print(s)
-    # temp = np.zeros((1,n))
-    # temp = np.zeros((2,n))
-
-    # U_0 = np.concatenate((u,temp),axis=0)
-    # X_0 = np.concatenate((X,temp), axis=0)
-    # print('\nU_0',U_0)
-
-    # u_new, s_new, v_new = increment_svd(U_0, s, v.T , A, B)
+   
     new_data = np.random.uniform(0,4,(30,n))
     m_new = np.concatenate((X,new_data), axis=0)
     update_svd(X, m_new)
-    # t = u_new @ s_new
-    # print(t @ v_new.T)
-    # e = np.linalg.norm((X_0 + A @ B.T) - np.dot(u_new , np.dot( s_new, v_new.T)),2)
-    # print('Error is', e)
+   
 
 
 
