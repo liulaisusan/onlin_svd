@@ -1,4 +1,6 @@
 import numpy as np
+import sparsesvd
+import scipy.sparse as sps
 
 
 def increment_svd(U, S, V, A, B):
@@ -81,7 +83,12 @@ def increment_svd(U, S, V, A, B):
     S_new = S_new + S_augmented
     # print(S_new)
 
-    u, sig, vh = np.linalg.svd(S_new, full_matrices=False)
+    # u, sig, vh = np.linalg.svd(S_new, full_matrices=False)
+    temp = sps.csc_matrix(S_new)
+    u, sig, vh = sparsesvd.sparsesvd(temp, u_y)
+    # print("u shape {}".format(u.shape))
+    u = u.T
+
 
     U_new = np.concatenate((U,P),axis=1) @ u
     S_new = np.diag(sig)
@@ -96,13 +103,21 @@ def update_svd(m_old, m_new):
         return
     m,n = m_old.shape
     c = m_new.shape[0] - m
-    u, s, v = np.linalg.svd(m_old, full_matrices=False)
+    # u, s, v = np.linalg.svd(m_old, full_matrices=False)
+    temp = sps.csc_matrix(m_old)
+    u, s, v = sparsesvd.sparsesvd(temp, n)
+  
+    u = u.T
+    # print("u shape {}".format(u.shape))
+
 
     B = m_new[m:, :].T
     A = np.concatenate((np.zeros((m, c)),np.eye(c)), axis=0)
     S = np.diag(s)
     U = np.concatenate((u,np.zeros((c,n))),axis=0)
-    V = v.T 
+
+
+    V = v.T
     u_new, s_new, v_new = increment_svd(U, S, V , A, B)
 
     e = np.linalg.norm(m_new - np.dot(u_new , np.dot( s_new, v_new.T)),2)
