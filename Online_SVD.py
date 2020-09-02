@@ -7,15 +7,15 @@ def increment_svd(U, S, V, A, B):
     # print(V)
     # print(A)
     # print(B)
-    u_x, u_y = U.shape # d_u <- dim(U),
-    rank_u = u_y # rankU <- d_u[2]
-    a_x, a_y = A.shape # d_a <- dim(A)
+    u_x, u_y = U.shape 
+    rank_u = u_y 
+    a_x, a_y = A.shape 
 
-    ua = np.concatenate((U, A), axis=1) # cBind(U,A)
-    qp,rp = np.linalg.qr(ua, mode='complete') # QP <- Matrix(qr.Q(qrP, complete = TRUE), sparse = TRUE) RP <- Matrix(qr.R(qrP, complete = TRUE), sparse = TRUE)
+    ua = np.concatenate((U, A), axis=1) 
+    qp,rp = np.linalg.qr(ua, mode='complete') 
 
-    qp_x, qp_y = qp.shape # d_qp <- dim(QP)
-    rp_x, rp_y = rp.shape # d_rp <- dim(RP)
+    qp_x, qp_y = qp.shape 
+    rp_x, rp_y = rp.shape 
     # print(qp)
     # print(rp)
 
