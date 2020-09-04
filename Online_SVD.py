@@ -2,10 +2,12 @@ import numpy as np
 import sparsesvd
 import scipy.sparse as sps
 
+####################
 # This function follow the Algorithm of Appendix A of Paper 'Fast online SVD revisions for lightweight recommender systems'
 # update the svd from X to X + A @ B.T
 # Param is U, S, V of X and A, B
 # Return new U, S, V
+####################
 def increment_svd(U, S, V, A, B):
     # print(U)
     # print(S)
@@ -68,9 +70,8 @@ def increment_svd(U, S, V, A, B):
     N = V.T @ B
     # print(N)
 
-    ##########################################
     ####### Creating Augmented Sigma
-    ##########################################
+   
     Ra_flatten = Ra.T
     temp_0 = np.concatenate((M, Ra_flatten), axis=0)
     # print(temp_0)
@@ -104,8 +105,9 @@ def increment_svd(U, S, V, A, B):
     V_new = np.concatenate((V,Q),axis=1) @ vh.T
 
     return U_new, S_new, V_new
-
+#####################
 # This function update the svd when X is appended with more lines
+#####################
 def append_lines_update_svd(m_old, m_new):
     if m_old.shape[1] != m_new.shape[1]:
         print('\nAppend_Lines:New matrix muss has the same colums as old matrix!')
@@ -169,6 +171,9 @@ def single_line_update_svd(m_old, m_new):
     e = np.linalg.norm(m_new - (u_new @ s_new @ v_new.T), 2)
     print("Error is ", e)
 
+###################
+# this function update when multiple positions in X updated
+###################
 def multi_lines_update_svd(m_old, m_new):
     if m_old.shape != m_new.shape:
         print("\Multi_lines: Matrix shape don't match")
