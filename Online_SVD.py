@@ -134,7 +134,10 @@ def append_lines_update_svd(m_old, m_new):
     e = np.linalg.norm(m_new - np.dot(u_new , np.dot( s_new, v_new.T)),2)
     print('Error is', e)
 
+###############
 # This function update svd when single row or colum in X is updated
+# not necessary
+###############
 def single_line_update_svd(m_old, m_new):
     if m_old.shape != m_new.shape:
         print("\nSingel_line: Matrix shape don't match")
@@ -166,32 +169,114 @@ def single_line_update_svd(m_old, m_new):
     e = np.linalg.norm(m_new - (u_new @ s_new @ v_new.T), 2)
     print("Error is ", e)
 
-
+def multi_lines_update_svd(m_old, m_new):
+    if m_old.shape != m_new.shape:
+        print("\Multi_lines: Matrix shape don't match")
+    shape = m_old.shape
+    diff = m_new - m_old
+    r,c = np.nonzero(diff)
+    # get the indexs of the rows and colums which are updated
+    rows = np.unique(r)
+    cols = np.unique(c)
+    # print("rows are ", rows)
+    if len(rows) <= len(cols):
+        print("row update")
+        a = np.zeros((shape[0],len(rows)))
+        b = np.zeros((shape[1],len(rows)))
+        for idx, i in enumerate(rows):
+            a[i,int(idx)] = 1
+            b[:,int(idx)] = diff[i,:].T
+        # print(m_new)
+        # print(a @ b.T)
+    else:
+        print("col update")
+        a = np.zeros((shape[0],len(cols)))
+        b = np.zeros((shape[1],len(cols)))
+        for idx, i in enumerate(cols):
+            a[:, int(idx)] = diff[:,i]
+            b[i, int(idx)] = 1
+        # print(m_new)
+        # print(a @ b.T)
+    temp = sps.csc_matrix(m_old)
+    u, s, v = sparsesvd.sparsesvd(temp, min(shape))
+    u = u.T 
+    v = v.T 
+    s = np.diag(s)
+    u_new, s_new, v_new = increment_svd(u,s,v,a,b)
+    e = np.linalg.norm(m_new - (u_new @ s_new @ v_new.T), 2)
+    print("Error is ", e)
 
 
 if __name__ == '__main__':
-    m = 100
-    n = 10
+    m = 50
+    n = 40
     X = np.random.uniform(0,5, (m,n))
+    # X= np.ones((m,n))
+    # X[3,4] = np.random.randint(0,10)
    
-    new_data = np.random.uniform(0,4,(2,n))
-    m_new = np.concatenate((X,new_data), axis=0)
-    append_lines_update_svd(X, m_new)
+    # ###############
+    # # append rows
+    # ###############
+    # new_data = np.random.uniform(0,4,(2,n))
+    # m_new = np.concatenate((X,new_data), axis=0)
+    # # append_lines_update_svd(X, m_new)
  
-    # # update col
+    # # ###############
+    # # update single col
+    # ###############
     # update = np.random.uniform(0,10,(m,))
     # temp = np.random.randint(0,n-1)
     # X_new = np.copy(X)
     # X_new[:, temp] = update
+    # # single_line_update_svd(X, X_new)
+    # multi_lines_update_svd(X,X_new)
 
-    # update row
-    update = np.random.uniform(0,10,(n,))
-    temp = np.random.randint(0,m-1)
-    X_new = np.copy(X)
-    X_new[temp, :] = update
+    # ###############
+    # # update single row
+    # ###############
+    # update = np.random.uniform(0,10,(n,))
+    # temp = np.random.randint(0,m-1)
+    # X_new = np.copy(X)
+    # X_new[temp, :] = update
+    # #single_line_update_svd(X, X_new)
+    # multi_lines_update_svd(X,X_new)
 
+    # ###############
+    # # update rows
+    # ###############
+    # new = np.copy(X)
+    # random_rows = np.random.permutation(m)[:2]
+    # # print(random_rows)
+    # for i in random_rows:
+    #     up = np.random.uniform(0,10,(n,))
+    #     new[i, :] = up
+    # # print(new)
+    # multi_lines_update_svd(X, new)
 
-    single_line_update_svd(X, X_new)
+    # ###############
+    # # update cols
+    # ###############
+    # new = np.copy(X)
+    # random_cols = np.random.permutation(n)[:1]
+    # # print(random_rows)
+    # for i in random_cols:
+    #     up = np.random.uniform(0,10,(m,))
+    #     new[:, i] = up
+    # # print(new)
+    # multi_lines_update_svd(X, new)
+
+    ###############
+    # update random positions
+    ###############
+    new = np.copy(X)
+    random_rows = np.random.randint(0,m,size=20)
+    random_cols = np.random.randint(0,n,size=10)
+    # print(random_rows,random_cols)
+    for i in random_rows:
+        for j in random_cols:
+            new[i][j] = np.random.uniform(0,10)
+    # print(new)
+    multi_lines_update_svd(X, new)
 
     
 
